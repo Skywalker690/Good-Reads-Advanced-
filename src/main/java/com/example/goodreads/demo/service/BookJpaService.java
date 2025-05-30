@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 public class BookJpaService implements BookRepository {
 
@@ -25,15 +26,13 @@ public class BookJpaService implements BookRepository {
     @Override
     public ArrayList<Book> getBooks() {
         List<Book> bookList = bookJpaRepository.findAll();
-        ArrayList<Book> books = new ArrayList<>(bookList);
-        return books;
+        return new ArrayList<>(bookList);
     }
 
     @Override
     public Book getBookById(int bookId) {
         try {
-            Book book = bookJpaRepository.findById(bookId).get();
-            return book;
+            return bookJpaRepository.findById(bookId).get();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -44,13 +43,11 @@ public class BookJpaService implements BookRepository {
         Publisher publisher = book.getPublisher();
         int publisherId = publisher.getPublisherId();
         try{
-
             publisher = publisherJpaRepository.findById(publisherId).get();
             book.setPublisher(publisher);
             bookJpaRepository.save(book);
             return book;
         } catch (Exception e) {
-
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong publisherId");
         }
     }
@@ -88,6 +85,7 @@ public class BookJpaService implements BookRepository {
         }
         throw new ResponseStatusException(HttpStatus.NO_CONTENT);
     }
+
 
     @Override
     public Publisher getBookPublisher(int bookId) {

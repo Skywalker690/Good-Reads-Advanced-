@@ -20,15 +20,13 @@ public class AuthorJpaService implements AuthorRepository {
     @Override
     public ArrayList<Author> getAuthors() {
         List<Author> authorList = authorJpaRepository.findAll();
-        ArrayList<Author> authors = new ArrayList<>(authorList);
-        return authors;
+        return new ArrayList<>(authorList);
     }
 
     @Override
     public Author getAuthorById(int authorId) {
         try {
-            Author author = authorJpaRepository.findById(authorId).get();
-            return author;
+            return authorJpaRepository.findById(authorId).get();
         }catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
