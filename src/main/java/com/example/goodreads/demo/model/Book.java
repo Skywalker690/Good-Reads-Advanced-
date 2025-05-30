@@ -1,5 +1,10 @@
 package com.example.goodreads.demo.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="book")
@@ -20,14 +25,24 @@ public class Book {
     @JoinColumn(name = "publisherid")
     private Publisher publisher;
 
+    @ManyToMany
+    @JoinTable( name ="Book_Author",
+            joinColumns = @JoinColumn(name = "bookid"),
+            inverseJoinColumns = @JoinColumn(name = "authorid")
+    )
+    @JsonIgnoreProperties("books")
+    private List<Author> authors = new ArrayList<>();
+
+
     public Book() {
     }
 
-    public Book(int id, String name, String imageUrl, Publisher publisher) {
+    public Book(int id, String name, String imageUrl, Publisher publisher,List<Author> authors) {
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
         this.publisher = publisher;
+        this.authors=authors;
     }
 
     public int getId() {
@@ -61,4 +76,14 @@ public class Book {
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
+
+    public List<Author> getAuthor() {
+        return authors;
+    }
+
+    public void setAuthor(List<Author> authors) {
+        this.authors = authors;
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.goodreads.demo.controller;
 
+import com.example.goodreads.demo.model.Author;
 import com.example.goodreads.demo.model.Book;
 import com.example.goodreads.demo.model.Publisher;
 import com.example.goodreads.demo.service.BookJpaService;
@@ -50,5 +51,10 @@ class BookController {
     @GetMapping("/books/{bookId}/publisher")
     public Publisher getBookPublisher(@PathVariable("bookId") int bookId) {
         return bookService.getBookPublisher(bookId);
+    }
+
+    @GetMapping("/books/{bookId}/authors")
+    public List<Author> getAuthors(@PathVariable("bookId") int bookId){
+        return bookService.getAuthors(bookId);
     }
 }
