@@ -3,6 +3,7 @@ package com.example.goodreads.demo.service;
 import com.example.goodreads.demo.model.Author;
 import com.example.goodreads.demo.model.Book;
 import com.example.goodreads.demo.model.Publisher;
+import com.example.goodreads.demo.repository.AuthorJpaRepository;
 import com.example.goodreads.demo.repository.BookJpaRepository;
 import com.example.goodreads.demo.repository.PublisherJpaRepository;
 import com.example.goodreads.demo.repository.BookRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @Service
@@ -23,6 +25,9 @@ public class BookJpaService implements BookRepository {
 
     @Autowired
     private PublisherJpaRepository publisherJpaRepository;
+
+    @Autowired
+    private AuthorJpaRepository authorJpaRepository;
 
     @Override
     public ArrayList<Book> getBooks() {
@@ -41,14 +46,28 @@ public class BookJpaService implements BookRepository {
 
     @Override
     public Book addBook(Book book) {
+
+        List<Integer> authorsIds = new ArrayList<>();
+        for (Author author : book.getAuthor()){
+            authorsIds.add(author.getAuthorId());
+        }
+
         Publisher publisher = book.getPublisher();
         int publisherId = publisher.getPublisherId();
+
         try{
+
+            List<Author> complete_authors =authorJpaRepository.findAllById(authorsIds);
+            if(authorsIds.size() != complete_authors.size()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"One or more of the author ids are invalid ");
+            }
+            book.setAuthor(complete_authors);
+
             publisher = publisherJpaRepository.findById(publisherId).get();
             book.setPublisher(publisher);
             bookJpaRepository.save(book);
             return book;
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong publisherId");
         }
     }
